@@ -31,13 +31,12 @@ async function init() {
   window.requestAnimationFrame(loop);
 
   const container = document.getElementById("cameraContainer");
-container.innerHTML = ""; // safety clear
-container.appendChild(webcam.canvas);
+  container.innerHTML = ""; // safety clear
+  // container.appendChild(webcam.canvas);
 }
 
 async function loop() {
   webcam.update();
-  webcam.draw();   // 🔥 THIS is what you are missing
   await predict();
 
   window.requestAnimationFrame(loop);
@@ -85,6 +84,6 @@ selections.forEach((box, index) => {
 document.getElementById("startBtn").addEventListener("click", async () => {
   await init();
 
-  document.getElementById("webcam").style.display = "block";
+  document.getElementById("cameraContainer").style.display = "block";
   document.getElementById("startBtn").style.display = "none";
 });
