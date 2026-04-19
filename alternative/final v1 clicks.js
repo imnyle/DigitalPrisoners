@@ -1,5 +1,11 @@
 // ─── Image sources ───────────────────────────────────────────────────────────
-//new
+//updated
+// Preload all images so they're cached and ready instantly
+k.forEach(src => {
+  const img = new Image();
+  img.src = src;
+});
+
 let k = [
   "images/abstract-1.gif",
   "images/abstract-2.gif",
@@ -17,11 +23,26 @@ mainImage.src = k[0];
 // ─── Helper: switch the big image with a fade ────────────────────────────────
 function switchToIndex(index) {
   if (index < 0 || index >= k.length) return;
-  mainImage.style.opacity = 0;
-  setTimeout(() => {
-    mainImage.src           = k[index];
-    mainImage.style.opacity = 1;
-  }, 500);
+
+  const newSrc = k[index];
+
+  // Don't switch if it's already showing
+  if (mainImage.src.endsWith(newSrc)) return;
+
+  // Preload the target image first
+  const preloader = new Image();
+  preloader.src = newSrc;
+
+  preloader.onload = () => {
+    // Fade out
+    mainImage.style.opacity = 0;
+
+    // Wait for fade out to finish, THEN swap — image is already loaded so it appears instantly
+    setTimeout(() => {
+      mainImage.src = newSrc;
+      mainImage.style.opacity = 1;
+    }, 300); // matches the CSS transition duration
+  };
 }
 
 // ─── Click behaviour (kept from original) ────────────────────────────────────
