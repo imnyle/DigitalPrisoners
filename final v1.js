@@ -72,13 +72,6 @@ async function predict() {
 }
 
 
-
-  if (highest > 0.85 && index !== currentIndex) {
-    currentIndex = index;
-    changeImage(index);
-  }
-
-
 function changeImage(index) {
   mainImage.style.opacity = 0;
 
