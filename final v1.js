@@ -37,8 +37,9 @@ container.appendChild(webcam.canvas);
 
 async function loop() {
   webcam.update();
+  webcam.draw();   // 🔥 THIS is what you are missing
   await predict();
-  
+
   window.requestAnimationFrame(loop);
 }
 
