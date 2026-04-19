@@ -1,10 +1,6 @@
 // ─── Image sources ───────────────────────────────────────────────────────────
-//updated
+//fixed
 // Preload all images so they're cached and ready instantly
-k.forEach(src => {
-  const img = new Image();
-  img.src = src;
-});
 
 let k = [
   "images/abstract-1.gif",
@@ -12,6 +8,11 @@ let k = [
   "images/abstract-3.gif",
   "images/abstract-4.gif"
 ];
+
+k.forEach(src => {
+  const img = new Image();
+  img.src = src;
+});
 
 // ─── DOM references ──────────────────────────────────────────────────────────
 let mainImage  = document.getElementById("myImage");
