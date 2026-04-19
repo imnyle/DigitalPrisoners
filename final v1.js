@@ -17,7 +17,6 @@ async function init() {
   await webcam.play();
   window.requestAnimationFrame(loop);
 
-  document.getElementById("webcam").srcObject = webcam.webcam;
   const video = document.getElementById("webcam");
 video.srcObject = webcam.webcam;
 video.play();
@@ -67,4 +66,10 @@ selections.forEach((box, index) => {
   });
 });
 
-init();
+
+document.getElementById("startBtn").addEventListener("click", async () => {
+  await init();
+
+  document.getElementById("webcam").style.display = "block";
+  document.getElementById("startBtn").style.display = "none";
+});
