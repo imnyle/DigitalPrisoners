@@ -30,14 +30,15 @@ async function init() {
   await webcam.play();
   window.requestAnimationFrame(loop);
 
-  const video = document.getElementById("webcam");
-video.srcObject = webcam.webcam;
-video.play();
+  const container = document.getElementById("cameraContainer");
+container.innerHTML = ""; // safety clear
+container.appendChild(webcam.canvas);
 }
 
 async function loop() {
   webcam.update();
   await predict();
+  
   window.requestAnimationFrame(loop);
 }
 

@@ -148,3 +148,9 @@ img{
 #myImage {
   transition: opacity 0.5s ease;
 }
+
+#cameraContainer canvas {
+    width: 300px;
+    height: 300px;
+    border-radius: 10px;
+}
