@@ -1,5 +1,18 @@
 const URL = "https://teachablemachine.withgoogle.com/models/IjrZiJePi/";
 
+const mainImage = document.getElementById("myImage");
+const selections = document.querySelectorAll(".selectionboxes");
+
+let k = [
+  "images/abstract-1.gif",
+  "images/abstract-2.gif",
+  "images/abstract-3.gif",
+  "images/abstract-4.gif"
+];
+
+// set default image
+mainImage.src = k[0];
+
 let model, webcam, ctx, maxPredictions;
 let currentIndex = -1; // prevents constant switching
 
