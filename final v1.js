@@ -51,9 +51,9 @@ async function loop() {
 }
 
 async function predict() {
-  const { pose } = await model.estimatePose(webcam.canvas);
+  const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
 
-  const prediction = await model.predict(pose);
+  const prediction = await model.predict(posenetOutput);
 
   let highest = 0;
   let index = 0;
