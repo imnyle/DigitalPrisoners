@@ -36,9 +36,16 @@ async function init() {
   window.requestAnimationFrame(loop);
 }
 
+let isPredicting = false;
+
 async function loop() {
   webcam.update();
-  await predict();
+
+  if (!isPredicting) {
+    isPredicting = true;
+    await predict();
+    isPredicting = false;
+  }
 
   window.requestAnimationFrame(loop);
 }
@@ -58,11 +65,19 @@ async function predict() {
     }
   }
 
-  if (highest > 0.85 && index !== currentIndex) {
+  if (highest > 0.90 && index !== currentIndex) {
     currentIndex = index;
     changeImage(index);
   }
 }
+
+
+
+  if (highest > 0.85 && index !== currentIndex) {
+    currentIndex = index;
+    changeImage(index);
+  }
+
 
 function changeImage(index) {
   mainImage.style.opacity = 0;
