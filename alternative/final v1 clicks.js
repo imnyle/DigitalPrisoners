@@ -1,5 +1,5 @@
 // ─── Image sources ───────────────────────────────────────────────────────────
-//updated
+//new
 let k = [
   "images/abstract-1.gif",
   "images/abstract-2.gif",
@@ -33,7 +33,7 @@ selections.forEach((box, index) => {
 });
 
 // ─── Teachable Machine Pose ──────────────────────────────────────────────────
-const MODEL_URL = "https://teachablemachine.withgoogle.com/models/IjrZiJePi/";
+const MODEL_URL = "https://teachablemachine.withgoogle.com/models/7yZQmehHs/";
 
 let model, webcam, ctx, labelContainer;
 let currentIndex   = 0;
