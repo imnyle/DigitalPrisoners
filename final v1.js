@@ -18,6 +18,9 @@ async function init() {
   window.requestAnimationFrame(loop);
 
   document.getElementById("webcam").srcObject = webcam.webcam;
+  const video = document.getElementById("webcam");
+video.srcObject = webcam.webcam;
+video.play();
 }
 
 async function loop() {
