@@ -26,9 +26,13 @@ async function init() {
   const size = 300;
   webcam = new tmPose.Webcam(size, size, true);
 
-  await webcam.setup();
-  await webcam.play();
+  await webcam.setup();  // asks for camera permission
+  await webcam.play();   // keep ONLY if it exists
 
+  if (!webcam.canvas) {
+    console.error("Webcam failed to initialize");
+    return;
+  }
   const container = document.getElementById("cameraContainer");
   container.innerHTML = "";
   container.appendChild(webcam.canvas); // ✅ FIXED
@@ -42,9 +46,12 @@ async function loop() {
   webcam.update();
 
   if (!isPredicting) {
-    isPredicting = true;
+  isPredicting = true;
+  try {
     await predict();
+  } finally {
     isPredicting = false;
+  }
   }
 
   window.requestAnimationFrame(loop);
