@@ -10,6 +10,9 @@ let k = [
   "images/abstract-4.gif"
 ];
 
+let stableIndex = -1;
+let stableCount = 0;
+
 // set default image
 mainImage.src = k[0];
 
@@ -36,6 +39,22 @@ async function init() {
   const container = document.getElementById("cameraContainer");
   container.innerHTML = "";
   container.appendChild(webcam.canvas); // ✅ FIXED
+
+    await webcam.setup();
+
+  if (webcam.play) {
+    await webcam.play();
+  }
+
+  // wait until video is ready
+  await new Promise(resolve => {
+    const check = setInterval(() => {
+      if (webcam.webcam && webcam.webcam.readyState === 4) {
+        clearInterval(check);
+        resolve();
+      }
+    }, 100);
+  });
 
   window.requestAnimationFrame(loop);
 }
@@ -72,10 +91,22 @@ async function predict() {
     }
   }
 
-  if (highest > 0.90 && index !== currentIndex) {
-    currentIndex = index;
-    changeImage(index);
+  if (highest > 0.75 && index !== currentIndex) {
+  currentIndex = index;
+  changeImage(index);
   }
+
+  if (index === stableIndex) {
+  stableCount++;
+} else {
+  stableIndex = index;
+  stableCount = 1;
+}
+
+if (stableCount > 5 && highest > 0.75 && index !== currentIndex) {
+  currentIndex = index;
+  changeImage(index);
+}
 }
 
 
