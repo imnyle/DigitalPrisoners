@@ -23,16 +23,17 @@ async function init() {
   model = await tmPose.load(modelURL, metadataURL);
   maxPredictions = model.getTotalClasses();
 
-  // setup webcam
   const size = 300;
   webcam = new tmPose.Webcam(size, size, true);
+
   await webcam.setup();
   await webcam.play();
-  window.requestAnimationFrame(loop);
 
   const container = document.getElementById("cameraContainer");
-  container.innerHTML = ""; // safety clear
-  // container.appendChild(webcam.canvas);
+  container.innerHTML = "";
+  container.appendChild(webcam.canvas); // ✅ FIXED
+
+  window.requestAnimationFrame(loop);
 }
 
 async function loop() {
@@ -43,10 +44,10 @@ async function loop() {
 }
 
 async function predict() {
-  const { pose, posenetOutput } = await model.estimatePose(webcam.canvas);
-  const prediction = await model.predict(posenetOutput);
+  const { pose } = await model.estimatePose(webcam.canvas);
 
-  // find highest confidence pose
+  const prediction = await model.predict(pose);
+
   let highest = 0;
   let index = 0;
 
@@ -57,7 +58,6 @@ async function predict() {
     }
   }
 
-  // only trigger if confident AND different pose
   if (highest > 0.85 && index !== currentIndex) {
     currentIndex = index;
     changeImage(index);
