@@ -14,8 +14,14 @@ k.forEach(src => {
   img.src = src;
 });
 
-const switchSound = new Audio("audio/Harp Strum.wav");
-switchSound.volume = .3;
+const switchSounds = [
+  new Audio("audiO/s4p bloop 1.mp3"),
+  new Audio("audio/s4p bloop 2.mp3"),
+  new Audio("audio/s4p bloop 3.mp3"),
+  new Audio("audio/s4p bloop 4.mp3")
+];
+
+switchSounds.volume = .3;
 
 // ─── DOM references ──────────────────────────────────────────────────────────
 let mainImage  = document.getElementById("myImage");
@@ -45,11 +51,13 @@ function switchToIndex(index) {
       mainImage.style.opacity = 1;
 
       const now = Date.now();
-      if (now - lastSoundTime >= SOUND_COOLDOWN_MS) {
-        switchSound.currentTime = 0;
-        switchSound.play();
-        lastSoundTime = now;
-      }
+  if (now - lastSoundTime >= SOUND_COOLDOWN_MS) {
+  // pick a random sound from the array
+  const randomSound = switchSounds[Math.floor(Math.random() * switchSounds.length)];
+  randomSound.currentTime = 0;
+  randomSound.play();
+  lastSoundTime = now;
+}
     }, 300);
   };
 }
