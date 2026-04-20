@@ -1,5 +1,5 @@
 // ─── Image sources ───────────────────────────────────────────────────────────
-//fixed
+//sound
 // Preload all images so they're cached and ready instantly
 
 let k = [
@@ -14,6 +14,8 @@ k.forEach(src => {
   img.src = src;
 });
 
+const switchSound = new Audio("audio/Harp Strum.wav");
+
 // ─── DOM references ──────────────────────────────────────────────────────────
 let mainImage  = document.getElementById("myImage");
 let selections = document.querySelectorAll(".selectionboxes");
@@ -26,23 +28,20 @@ function switchToIndex(index) {
   if (index < 0 || index >= k.length) return;
 
   const newSrc = k[index];
-
-  // Don't switch if it's already showing
   if (mainImage.src.endsWith(newSrc)) return;
 
-  // Preload the target image first
   const preloader = new Image();
   preloader.src = newSrc;
 
   preloader.onload = () => {
-    // Fade out
     mainImage.style.opacity = 0;
 
-    // Wait for fade out to finish, THEN swap — image is already loaded so it appears instantly
     setTimeout(() => {
       mainImage.src = newSrc;
       mainImage.style.opacity = 1;
-    }, 300); // matches the CSS transition duration
+      switchSound.currentTime = 0; // rewind to start in case it's still playing
+      switchSound.play();
+    }, 300);
   };
 }
 
