@@ -1,5 +1,5 @@
 // ─── Image sources ───────────────────────────────────────────────────────────
-//changes
+//fixed
 // Preload all images so they're cached and ready instantly
 
 let k = [
@@ -87,25 +87,27 @@ async function initPoseModel() {
   const metadataURL = MODEL_URL + "metadata.json";
 
   model  = await tmPose.load(modelURL, metadataURL);
-  webcam = new tmPose.Webcam(150, 150, true); // smaller = faster
+  webcam = new tmPose.Webcam(150, 150, true);
   await webcam.setup();
   await webcam.play();
 
-  const canvas  = document.createElement("canvas");
+  // ✅ Create canvas AND assign ctx
+  const canvas = document.createElement("canvas");
   canvas.width  = 150;
   canvas.height = 150;
-  // Remove the fixed positioning and use absolute instead
-canvas.style.cssText =
-  "position:absolute;top:10px;right:10px;border-radius:8px;" +
-  "border:1px solid rgba(255,255,255,0.4);opacity:0.75;z-index:999;" +
-  "width:120px;height:120px;";  // display size, can adjust
-document.getElementById("mainimage").appendChild(canvas); // attach to #mainimage instead of body
+  canvas.style.cssText =
+    "position:absolute;top:10px;right:10px;border-radius:8px;" +
+    "border:1px solid rgba(255,255,255,0.4);opacity:0.75;z-index:999;" +
+    "width:120px;height:120px;";
+  document.getElementById("mainimage").appendChild(canvas);
+  ctx = canvas.getContext("2d"); // ✅ this line was missing
 
-// Same for the label
-labelContainer.style.cssText =
-  "position:absolute;top:135px;right:10px;color:white;font-size:12px;" +
-  "background:rgba(0,0,0,0.5);padding:4px 8px;border-radius:6px;z-index:999;";
-document.getElementById("mainimage").appendChild(labelContainer); // attach to #mainimage instead of body
+  // ✅ Create labelContainer element first, THEN style it
+  labelContainer = document.createElement("div"); // ✅ this line was missing
+  labelContainer.style.cssText =
+    "position:absolute;top:135px;right:10px;color:white;font-size:12px;" +
+    "background:rgba(0,0,0,0.5);padding:4px 8px;border-radius:6px;z-index:999;";
+  document.getElementById("mainimage").appendChild(labelContainer);
 
   window.requestAnimationFrame(poseLoop);
 }
