@@ -1,5 +1,5 @@
 // ─── Image sources ───────────────────────────────────────────────────────────
-//sound
+//changes
 // Preload all images so they're cached and ready instantly
 
 let k = [
@@ -24,6 +24,9 @@ let selections = document.querySelectorAll(".selectionboxes");
 mainImage.src = k[0];
 
 // ─── Helper: switch the big image with a fade ────────────────────────────────
+let lastSoundTime = 0;
+const SOUND_COOLDOWN_MS = 2000; // minimum ms between sounds
+
 function switchToIndex(index) {
   if (index < 0 || index >= k.length) return;
 
@@ -39,8 +42,13 @@ function switchToIndex(index) {
     setTimeout(() => {
       mainImage.src = newSrc;
       mainImage.style.opacity = 1;
-      switchSound.currentTime = 0; // rewind to start in case it's still playing
-      switchSound.play();
+
+      const now = Date.now();
+      if (now - lastSoundTime >= SOUND_COOLDOWN_MS) {
+        switchSound.currentTime = 0;
+        switchSound.play();
+        lastSoundTime = now;
+      }
     }, 300);
   };
 }
@@ -86,17 +94,18 @@ async function initPoseModel() {
   const canvas  = document.createElement("canvas");
   canvas.width  = 150;
   canvas.height = 150;
-  canvas.style.cssText =
-    "position:fixed;bottom:50px;right:10px;border-radius:8px;" +
-    "border:1px solid rgba(255,255,255,0.4);opacity:0.75;z-index:999;";
-  document.body.appendChild(canvas);
-  ctx = canvas.getContext("2d");
+  // Remove the fixed positioning and use absolute instead
+canvas.style.cssText =
+  "position:absolute;top:10px;right:10px;border-radius:8px;" +
+  "border:1px solid rgba(255,255,255,0.4);opacity:0.75;z-index:999;" +
+  "width:120px;height:120px;";  // display size, can adjust
+document.getElementById("mainimage").appendChild(canvas); // attach to #mainimage instead of body
 
-  labelContainer = document.createElement("div");
-  labelContainer.style.cssText =
-    "position:fixed;bottom:10px;right:10px;color:white;font-size:12px;" +
-    "background:rgba(0,0,0,0.5);padding:4px 8px;border-radius:6px;z-index:999;";
-  document.body.appendChild(labelContainer);
+// Same for the label
+labelContainer.style.cssText =
+  "position:absolute;top:135px;right:10px;color:white;font-size:12px;" +
+  "background:rgba(0,0,0,0.5);padding:4px 8px;border-radius:6px;z-index:999;";
+document.getElementById("mainimage").appendChild(labelContainer); // attach to #mainimage instead of body
 
   window.requestAnimationFrame(poseLoop);
 }
