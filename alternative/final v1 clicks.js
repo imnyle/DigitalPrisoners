@@ -15,6 +15,7 @@ k.forEach(src => {
 });
 
 const switchSound = new Audio("audio/Harp Strum.wav");
+switchSound.volume = .3;
 
 // ─── DOM references ──────────────────────────────────────────────────────────
 let mainImage  = document.getElementById("myImage");
