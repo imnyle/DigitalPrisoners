@@ -1,13 +1,12 @@
-// script.js
 window.onload = () => {
 
-  // 1. Wait 8 seconds, then start fading (assuming 2s fade duration)
+  // 10 seconds before fade animation
   setTimeout(() => {
     document.body.classList.add('fade-out');
-  }, 8000); 
+  }, 10000); 
 
-  // 2. Redirect exactly at 10 seconds
+  // Then move to other site at 12 seconds
   setTimeout(() => {
     window.location.href = "finalv1.html";
-  }, 10000);
+  }, 12000);
 };

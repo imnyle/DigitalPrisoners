@@ -1,7 +1,4 @@
-// ─── Image sources ───────────────────────────────────────────────────────────
-//fixed
-// Preload all images so they're cached and ready instantly
-
+// Images
 let k = [
   "images/abstract-1.gif",
   "images/abstract-2.gif",
@@ -15,24 +12,58 @@ k.forEach(src => {
 });
 
 const switchSounds = [
-  new Audio("audiO/s4p bloop 1.mp3"),
+  new Audio("audio/s4p bloop 1.mp3"),
   new Audio("audio/s4p bloop 2.mp3"),
   new Audio("audio/s4p bloop 3.mp3"),
   new Audio("audio/s4p bloop 4.mp3")
 ];
 
-switchSounds.volume = .3;
+// ✅ Fix: set volume on each sound individually, not the array
+switchSounds.forEach(s => s.volume = 0.3);
 
-// ─── DOM references ──────────────────────────────────────────────────────────
+// Low confidence ambient sound
+const lowConfidenceSound = new Audio("audio/angry sound.mp3"); // 🔁 replace with your file
+lowConfidenceSound.loop   = true;  // loops until confidence returns
+lowConfidenceSound.volume = 0.3;
+let isLowConfidencePlaying = false; // tracks whether it's currently playing
+
+// Connecting to HTML
 let mainImage  = document.getElementById("myImage");
 let selections = document.querySelectorAll(".selectionboxes");
+const poseOverlay = document.getElementById("poseOverlay");
 
-// ─── Set default image ───────────────────────────────────────────────────────
+// Default image
 mainImage.src = k[0];
 
-// ─── Helper: switch the big image with a fade ────────────────────────────────
+// Switch function with animation and sounds
 let lastSoundTime = 0;
-const SOUND_COOLDOWN_MS = 2000; // minimum ms between sounds
+const SOUND_COOLDOWN_MS = 2000;
+
+// near the top with your other state variables
+let isFading = false;
+
+function fadeOutSound(sound, duration = 1000) {
+  if (isFading) return; // ✅ prevent multiple fades stacking up
+  isFading = true;
+
+  const steps = 20;
+  const interval = duration / steps;
+  const volumeStep = sound.volume / steps;
+
+  const fade = setInterval(() => {
+    if (sound.volume > volumeStep) {
+      sound.volume -= volumeStep;
+    } else {
+      sound.volume = 0;
+      sound.pause();
+      sound.currentTime = 0;
+      sound.volume = 0.3; // reset for next time
+      isFading = false;   // ✅ allow future fades
+      clearInterval(fade);
+    }
+  }, interval);
+}
+
 
 function switchToIndex(index) {
   if (index < 0 || index >= k.length) return;
@@ -51,18 +82,17 @@ function switchToIndex(index) {
       mainImage.style.opacity = 1;
 
       const now = Date.now();
-  if (now - lastSoundTime >= SOUND_COOLDOWN_MS) {
-  // pick a random sound from the array
-  const randomSound = switchSounds[Math.floor(Math.random() * switchSounds.length)];
-  randomSound.currentTime = 0;
-  randomSound.play();
-  lastSoundTime = now;
-}
+      if (now - lastSoundTime >= SOUND_COOLDOWN_MS) {
+        const randomSound = switchSounds[Math.floor(Math.random() * switchSounds.length)];
+        randomSound.currentTime = 0;
+        randomSound.play();
+        lastSoundTime = now;
+      }
     }, 300);
   };
 }
 
-// ─── Click behaviour (kept from original) ────────────────────────────────────
+// Clicking
 selections.forEach((box, index) => {
   box.addEventListener("click", () => {
     currentIndex = index;
@@ -70,7 +100,7 @@ selections.forEach((box, index) => {
   });
 });
 
-// ─── Teachable Machine Pose ──────────────────────────────────────────────────
+// Teachable Machine
 const MODEL_URL = "https://teachablemachine.withgoogle.com/models/7yZQmehHs/";
 
 let model, webcam, ctx, labelContainer;
@@ -79,10 +109,11 @@ let lastSwitchTime = 0;
 let frameCount     = 0;
 let poseBuffer     = [];
 
-const COOLDOWN_MS   = 800;  // ms between switches
-const CONFIDENCE    = 0.75; // minimum confidence to consider a pose
-const PREDICT_EVERY = 3;    // only predict every Nth frame
-const BUFFER_SIZE   = 3;    // pose must be consistent across N predictions
+const COOLDOWN_MS        = 800;
+const CONFIDENCE         = 0.99; // threshold to trigger image switch
+const LOW_CONF_THRESHOLD = 0.99; // below this plays the ambient sound
+const PREDICT_EVERY      = 3;
+const BUFFER_SIZE        = 5;
 
 const poseToIndex = {
   "Pose 0": 0,
@@ -100,7 +131,6 @@ async function initPoseModel() {
   await webcam.setup();
   await webcam.play();
 
-  // ✅ Create canvas AND assign ctx
   const canvas = document.createElement("canvas");
   canvas.width  = 150;
   canvas.height = 150;
@@ -109,10 +139,9 @@ async function initPoseModel() {
     "border:1px solid rgba(255,255,255,0.4);opacity:0.75;z-index:999;" +
     "width:120px;height:120px;";
   document.getElementById("mainimage").appendChild(canvas);
-  ctx = canvas.getContext("2d"); // ✅ this line was missing
+  ctx = canvas.getContext("2d");
 
-  // ✅ Create labelContainer element first, THEN style it
-  labelContainer = document.createElement("div"); // ✅ this line was missing
+  labelContainer = document.createElement("div");
   labelContainer.style.cssText =
     "position:absolute;top:135px;right:10px;color:white;font-size:12px;" +
     "background:rgba(0,0,0,0.5);padding:4px 8px;border-radius:6px;z-index:999;";
@@ -145,6 +174,26 @@ async function predict(timestamp) {
 
   ctx.drawImage(webcam.canvas, 0, 0);
 
+    if (best.probability < LOW_CONF_THRESHOLD) {
+    // ✅ Show red overlay
+    poseOverlay.style.display = "flex";
+
+    if (!isLowConfidencePlaying && !isFading) {
+      lowConfidenceSound.currentTime = 0;
+      lowConfidenceSound.play();
+      isLowConfidencePlaying = true;
+    }
+  } else if (best.probability >= CONFIDENCE) {
+    // ✅ Hide red overlay
+    poseOverlay.style.display = "none";
+
+    if (isLowConfidencePlaying && !isFading) {
+      isLowConfidencePlaying = false;
+      fadeOutSound(lowConfidenceSound, 1000);
+    }
+  }
+
+  // Pose switching logic (unchanged)
   if (best.probability >= CONFIDENCE) {
     poseBuffer.push(best.className);
     if (poseBuffer.length > BUFFER_SIZE) poseBuffer.shift();
@@ -164,11 +213,11 @@ async function predict(timestamp) {
       switchToIndex(newIndex);
     }
   } else {
-    poseBuffer = []; // reset if not confident
+    poseBuffer = [];
   }
 }
 
-// ─── Start ───────────────────────────────────────────────────────────────────
+// Start
 initPoseModel().catch(err => {
   console.error("Teachable Machine pose init failed:", err);
 });
