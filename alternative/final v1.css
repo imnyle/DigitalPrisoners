@@ -78,17 +78,14 @@ body{
     align-items: center;
 }
 
-#right{
+#right {
     width: 20vw;
     height: 85vh;
     display: flex;
-    align-items: center;
-    justify-content: flex-end;
+    flex-direction: column; 
+    justify-content: space-evenly; 
     text-align: right;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    padding-left: 40px;
-    padding-right: 20px;
+    padding: 20px 20px 20px 40px;
     box-sizing: border-box;
 
     backdrop-filter: blur(20px);
@@ -96,7 +93,15 @@ body{
 
     border-radius: 15px;
     border: 1px solid rgba(255,255,255);
-    
+}
+
+.about {
+    color: aliceblue;
+    text-decoration: none;
+}
+
+.about:hover {
+    text-decoration: underline;
 }
 
 #mainimage{
