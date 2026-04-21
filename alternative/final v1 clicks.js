@@ -18,14 +18,13 @@ const switchSounds = [
   new Audio("audio/s4p bloop 4.mp3")
 ];
 
-// ✅ Fix: set volume on each sound individually, not the array
 switchSounds.forEach(s => s.volume = 0.3);
 
-// Low confidence ambient sound
-const lowConfidenceSound = new Audio("audio/angry sound.mp3"); // 🔁 replace with your file
-lowConfidenceSound.loop   = true;  // loops until confidence returns
+
+const lowConfidenceSound = new Audio("audio/angry sound.mp3"); // 
+lowConfidenceSound.loop   = true;  
 lowConfidenceSound.volume = 0.3;
-let isLowConfidencePlaying = false; // tracks whether it's currently playing
+let isLowConfidencePlaying = false; 
 
 // Connecting to HTML
 let mainImage  = document.getElementById("myImage");
@@ -35,15 +34,14 @@ const poseOverlay = document.getElementById("poseOverlay");
 // Default image
 mainImage.src = k[0];
 
-// Switch function with animation and sounds
+
 let lastSoundTime = 0;
 const SOUND_COOLDOWN_MS = 2000;
 
-// near the top with your other state variables
 let isFading = false;
 
 function fadeOutSound(sound, duration = 1000) {
-  if (isFading) return; // ✅ prevent multiple fades stacking up
+  if (isFading) return; 
   isFading = true;
 
   const steps = 20;
@@ -58,7 +56,7 @@ function fadeOutSound(sound, duration = 1000) {
       sound.pause();
       sound.currentTime = 0;
       sound.volume = 0.3; // reset for next time
-      isFading = false;   // ✅ allow future fades
+      isFading = false;   // allow future fades
       clearInterval(fade);
     }
   }, interval);
@@ -175,7 +173,6 @@ async function predict(timestamp) {
   ctx.drawImage(webcam.canvas, 0, 0);
 
     if (best.probability < LOW_CONF_THRESHOLD) {
-    // ✅ Show red overlay
     poseOverlay.style.display = "flex";
 
     if (!isLowConfidencePlaying && !isFading) {
@@ -184,7 +181,6 @@ async function predict(timestamp) {
       isLowConfidencePlaying = true;
     }
   } else if (best.probability >= CONFIDENCE) {
-    // ✅ Hide red overlay
     poseOverlay.style.display = "none";
 
     if (isLowConfidencePlaying && !isFading) {
@@ -193,7 +189,7 @@ async function predict(timestamp) {
     }
   }
 
-  // Pose switching logic (unchanged)
+  // Pose switching logic 
   if (best.probability >= CONFIDENCE) {
     poseBuffer.push(best.className);
     if (poseBuffer.length > BUFFER_SIZE) poseBuffer.shift();
